@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omor AI</title>
+    <style>
+        /* CSS অংশ */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            height: 100vh;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: #1e88e5;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            display: flex;
+            justify-content: space-between; /* ছবি ও টেক্সটকে দুই পাশে রাখার জন্য */
+            align-items: center;
+            position: relative; /* ছবির অবস্থান নিয়ন্ত্রণের জন্য */
+        }
+        /* আপনার প্রোফাইল ছবির জন্য CSS */
+        .profile-pic {
+            position: absolute;
+            right: 15px; /* ডান কর্নারে নিয়ে যাওয়ার জন্য */
+            top: 50%;
+            transform: translateY(-50%); /* উল্লম্বভাবে কেন্দ্রে রাখার জন্য */
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+        }
+        
+        #chat-window {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #e3f2fd;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #bbdefb;
+            margin-left: auto;
+            text-align: right;
+        }
+        .ai-message {
+            background-color: #ffffff;
+            margin-right: auto;
+            text-align: left;
+            border: 1px solid #c5cae9;
+        }
+        /* ব্যানার বিজ্ঞাপনের জন্য CSS */
+        #banner-ad-container {
+            text-align: center;
+            padding: 5px 0;
+            background-color: #fafafa;
+            border-bottom: 1px solid #ccc;
+        }
+        .input-area {
+            display: flex;
+            /* এখন শুধু ইনপুট রো থাকবে, ফাইল ইনপুট এরিয়া নেই */
+            padding: 10px;
+            border-top: 1px solid #ccc;
+            background: #fff;
+        }
+        .input-row {
+            display: flex;
+            width: 100%; /* সম্পূর্ণ প্রস্থ ব্যবহার করবে */
+        }
+        #prompt-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            margin-right: 10px;
+            font-size: 1em;
+        }
+        #send-btn {
+            background-color: #1e88e5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        /* ছবি আপলোডের কোনো CSS এখন আর প্রয়োজন নেই */
+    </style>
+</head>
+<body>
+
+<script type='text/javascript' src='//pl28024337.effectivegatecpm.com/59/ae/90/59ae90b269cf95b77e60b17d85353839.js'></script>
+
+
+<div class="app-container">
+    <header>
+        <span>Omor AI</span>
+        <img class="profile-pic" src="https://i.ibb.co.com/6cnckNfF/1762756326642.jpg" alt="Developer Profile Picture">
+    </header>
+
+    <div id="banner-ad-container">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : '8051ff99ce4447fc53827cc9afd2eeb8',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/8051ff99ce4447fc53827cc9afd2eeb8/invoke.js"></script>
+    </div>
+    
+    <div id="chat-window">
+        <div class="message ai-message">আমি আপনার AI সহকারী। আপনি কী জানতে চান?</div>
+    </div>
+
+    <div class="input-area">
+        <div class="input-row">
+            <input type="text" id="prompt-input" placeholder="আপনার প্রশ্ন/নির্দেশটি এখানে লিখুন...">
+            <button id="send-btn">প্রেরণ</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ⚠️ আপনার API Key এখানে রয়েছে।
+    const API_KEY = "AIzaSyCexfkcClgeqAjqRqchy31Lp97hTFAw2GA"; 
+    
+    const chatWindow = document.getElementById('chat-window');
+    const promptInput = document.getElementById('prompt-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // ছবি আপলোড/প্রিভিউ সংক্রান্ত সব ভেরিয়েবল সরানো হলো।
+    
+    // চ্যাট উইন্ডোতে মেসেজ দেখানোর ফাংশন
+    function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message ' + (sender === 'user' ? 'user-message' : 'ai-message');
+        
+        // ছবি দেখানোর লজিক সরানো হলো
+        const textNode = document.createTextNode(text);
+        messageDiv.appendChild(textNode);
+
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // এআই থেকে সাড়া পাওয়ার মূল ফাংশন (শুধুমাত্র টেক্সট ইনপুট নেবে)
+    async function sendMessage() {
+        const prompt = promptInput.value.trim();
+
+        if (!prompt) return;
+
+        // কোনো কাস্টম লজিক নেই, সরাসরি API কল হবে
+        
+        // ১. ইউজারের মেসেজ যোগ করা
+        addMessage(prompt, 'user');
+        promptInput.value = ''; 
+
+        // ২. এআই এর সাড়ার জন্য লোডিং মেসেজ যোগ করা
+        addMessage("AI চিন্তা করছে...", 'ai');
+        const loadingMessage = chatWindow.lastChild;
+
+        // মডেল ও URL সেট করা
+        const model = 'gemini-2.5-flash'; 
+        const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${API_KEY}`;
+
+        // কন্টেন্ট শুধুমাত্র টেক্সট অংশ নিয়ে গঠিত
+        let contents = [{ text: prompt }];
+        
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: [{ parts: contents }]
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`HTTP ত্রুটি: ${response.status}. বিস্তারিত: ${errorData.error.message}`);
+            }
+
+            const data = await response.json();
+            
+            // ৪. এআই এর সাড়া প্রক্রিয়াকরণ
+            const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "কোনো সাড়া পাওয়া যায়নি বা ত্রুটি হয়েছে।";
+            
+            // ৫. লোডিং মেসেজ সরিয়ে আসল উত্তর বসানো
+            loadingMessage.textContent = aiResponse;
+
+        } catch (error) {
+            console.error('Error:', error);
+            
+            // API ত্রুটিগুলি সমাধানের জন্য সংশোধিত অংশ
+            let errorMessage = `API সংযোগ ব্যর্থ হয়েছে। বিস্তারিত: ${error.message}`;
+
+            if (error.message.includes('400') || error.message.includes('API key is invalid')) {
+                 errorMessage = "❌ ত্রুটি: আপনার **API Key সম্ভবত অবৈধ** অথবা এটি যে মডেল ব্যবহার করার চেষ্টা করছে, তার জন্য অনুমোদিত নয়।";
+            } else if (error.message.includes('403') || error.message.includes('permission') || error.message.includes('NOT_FOUND')) {
+                 errorMessage = "❌ ত্রুটি: **মডেল অ্যাক্সেসে সমস্যা**।";
+            }
+
+            loadingMessage.textContent = errorMessage;
+        }
+    }
+
+    // ইভেন্ট লিসেনার (অপরিবর্তিত)
+    sendBtn.addEventListener('click', sendMessage);
+    promptInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+</script>
+
+</body>
+</html>
