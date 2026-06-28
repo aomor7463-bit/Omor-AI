@@ -3,241 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omor AI</title>
+    <title>অ্যাডমিন প্যানেল - মাদারগঞ্জ ব্লাড ডোনার সোসাইটি</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
     <style>
-        /* CSS অংশ */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
         }
-        .app-container {
-            width: 100%;
-            max-width: 600px;
-            height: 100vh;
-            background: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-        }
-        header {
-            background: #1e88e5;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 1.2em;
-            display: flex;
-            justify-content: space-between; /* ছবি ও টেক্সটকে দুই পাশে রাখার জন্য */
-            align-items: center;
-            position: relative; /* ছবির অবস্থান নিয়ন্ত্রণের জন্য */
-        }
-        /* আপনার প্রোফাইল ছবির জন্য CSS */
-        .profile-pic {
-            position: absolute;
-            right: 15px; /* ডান কর্নারে নিয়ে যাওয়ার জন্য */
-            top: 50%;
-            transform: translateY(-50%); /* উল্লম্বভাবে কেন্দ্রে রাখার জন্য */
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid white;
-            object-fit: cover;
-        }
-        
-        #chat-window {
-            flex-grow: 1;
+        body {
+            background-color: #f5f6fa;
+            color: #2c3e50;
             padding: 20px;
-            overflow-y: auto;
-            background-color: #e3f2fd;
         }
-        .message {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 15px;
-            max-width: 80%;
+        .admin-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
-        .user-message {
-            background-color: #bbdefb;
-            margin-left: auto;
-            text-align: right;
+        h1 {
+            color: #e74c3c;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 10px;
         }
-        .ai-message {
-            background-color: #ffffff;
-            margin-right: auto;
+        .dashboard-stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #ffefe6;
+            border-left: 5px solid #e74c3c;
+            padding: 20px;
+            border-radius: 8px;
+            flex: 1;
+        }
+        .stat-card h3 {
+            font-size: 16px;
+            color: #7f8c8d;
+        }
+        .stat-card p {
+            font-size: 32px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px 15px;
             text-align: left;
-            border: 1px solid #c5cae9;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
         }
-        /* ব্যানার বিজ্ঞাপনের জন্য CSS */
-        #banner-ad-container {
-            text-align: center;
-            padding: 5px 0;
-            background-color: #fafafa;
-            border-bottom: 1px solid #ccc;
+        th {
+            background-color: #e74c3c;
+            color: white;
         }
-        .input-area {
-            display: flex;
-            /* এখন শুধু ইনপুট রো থাকবে, ফাইল ইনপুট এরিয়া নেই */
-            padding: 10px;
-            border-top: 1px solid #ccc;
-            background: #fff;
+        tr:hover {
+            background-color: #f9f9f9;
         }
-        .input-row {
-            display: flex;
-            width: 100%; /* সম্পূর্ণ প্রস্থ ব্যবহার করবে */
-        }
-        #prompt-input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            margin-right: 10px;
-            font-size: 1em;
-        }
-        #send-btn {
-            background-color: #1e88e5;
+        .btn-delete {
+            background: #c0392b;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 20px;
+            padding: 6px 12px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 12px;
         }
-        /* ছবি আপলোডের কোনো CSS এখন আর প্রয়োজন নেই */
+        .btn-delete:hover {
+            background: #962d22;
+        }
+        #loginForm {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-<script type='text/javascript' src='//pl28024337.effectivegatecpm.com/59/ae/90/59ae90b269cf95b77e60b17d85353839.js'></script>
-
-
-<div class="app-container">
-    <header>
-        <span>Omor AI</span>
-        <img class="profile-pic" src="https://i.ibb.co.com/6cnckNfF/1762756326642.jpg" alt="Developer Profile Picture">
-    </header>
-
-    <div id="banner-ad-container">
-        <script type="text/javascript">
-            atOptions = {
-                'key' : '8051ff99ce4447fc53827cc9afd2eeb8',
-                'format' : 'iframe',
-                'height' : 50,
-                'width' : 320,
-                'params' : {}
-            };
-        </script>
-        <script type="text/javascript" src="//www.highperformanceformat.com/8051ff99ce4447fc53827cc9afd2eeb8/invoke.js"></script>
-    </div>
-    
-    <div id="chat-window">
-        <div class="message ai-message">আমি আপনার AI সহকারী। আপনি কী জানতে চান?</div>
+    <div id="loginForm">
+        <h2>অ্যাডমিন লগইন</h2>
+        <input type="password" id="adminPass" placeholder="পাসওয়ার্ড লিখুন">
+        <button onclick="checkPassword()">প্রবেশ করুন</button>
     </div>
 
-    <div class="input-area">
-        <div class="input-row">
-            <input type="text" id="prompt-input" placeholder="আপনার প্রশ্ন/নির্দেশটি এখানে লিখুন...">
-            <button id="send-btn">প্রেরণ</button>
+    <div id="adminDashboard" class="admin-container" style="display: none;">
+        <h1>মাদারগঞ্জ ব্লাড ডোনার সোসাইটি - অ্যাডমিন প্যানেল</h1>
+        
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h3>মোট নিবন্ধিত রক্তদাতা</h3>
+                <p id="totalDonors">০</p>
+            </div>
+        </div>
+
+        <h2>রক্তদাতাদের তালিকা</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>নাম</th>
+                        <th>গ্রুপ</th>
+                        <th>মোবাইল</th>
+                        <th>বয়স/ওজন</th>
+                        <th>ঠিকানা</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="donorTableBody">
+                    </tbody>
+            </table>
         </div>
     </div>
-</div>
 
-<script>
-    // ⚠️ আপনার API Key এখানে রয়েছে।
-    const API_KEY = "AIzaSyCexfkcClgeqAjqRqchy31Lp97hTFAw2GA"; 
-    
-    const chatWindow = document.getElementById('chat-window');
-    const promptInput = document.getElementById('prompt-input');
-    const sendBtn = document.getElementById('send-btn');
-
-    // ছবি আপলোড/প্রিভিউ সংক্রান্ত সব ভেরিয়েবল সরানো হলো।
-    
-    // চ্যাট উইন্ডোতে মেসেজ দেখানোর ফাংশন
-    function addMessage(text, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message ' + (sender === 'user' ? 'user-message' : 'ai-message');
+    <script>
+        // আপনার ফায়ারবেস কনফিগারেশন
+        const firebaseConfig = {
+            apiKey: "AIzaSyABNl-z1-x4dmJfNHoZVQHqRE5XnRHeB10",
+            authDomain: "omor-7f5b7.firebaseapp.com",
+            databaseURL: "https://omor-7f5b7-default-rtdb.firebaseio.com",
+            projectId: "omor-7f5b7",
+            storageBucket: "omor-7f5b7.firebasestorage.app",
+            messagingSenderId: "170819945184",
+            appId: "1:170819945184:web:c81d2df8f5630199e44685"
+        };
         
-        // ছবি দেখানোর লজিক সরানো হলো
-        const textNode = document.createTextNode(text);
-        messageDiv.appendChild(textNode);
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-        chatWindow.appendChild(messageDiv);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
+        // পাসওয়ার্ড চেক করার ফাংশন
+        function checkPassword() {
+            const pass = document.getElementById('adminPass').value;
+            if(pass === "admin123") { // এখানে আপনার পছন্দের পাসওয়ার্ড দিতে পারেন
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                loadAllDonors();
+            } else {
+                alert("ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।");
+            }
+        }
 
-    // এআই থেকে সাড়া পাওয়ার মূল ফাংশন (শুধুমাত্র টেক্সট ইনপুট নেবে)
-    async function sendMessage() {
-        const prompt = promptInput.value.trim();
+        // সকল রক্তদাতার ডাটা লোড করার ফাংশন
+        function loadAllDonors() {
+            const tableBody = document.getElementById('donorTableBody');
+            
+            // ফায়ারবেসের 'donors' নোড থেকে ডেটা নেওয়া
+            database.ref('donors').on('value', (snapshot) => {
+                tableBody.innerHTML = "";
+                let count = 0;
 
-        if (!prompt) return;
+                if(snapshot.exists()) {
+                    // ফায়ারবেস ডাটা স্ট্রাকচার অনুযায়ী লুপ চালানো (Group -> District -> Upazila -> Donor)
+                    snapshot.forEach((groupSnapshot) => {
+                        groupSnapshot.forEach((districtSnapshot) => {
+                            districtSnapshot.forEach((upazilaSnapshot) => {
+                                upazilaSnapshot.forEach((donorSnapshot) => {
+                                    const donor = donorSnapshot.val();
+                                    const donorKey = donorSnapshot.key;
+                                    const path = `donors/${groupSnapshot.key}/${districtSnapshot.key}/${upazilaSnapshot.key}/${donorKey}`;
+                                    count++;
 
-        // কোনো কাস্টম লজিক নেই, সরাসরি API কল হবে
-        
-        // ১. ইউজারের মেসেজ যোগ করা
-        addMessage(prompt, 'user');
-        promptInput.value = ''; 
-
-        // ২. এআই এর সাড়ার জন্য লোডিং মেসেজ যোগ করা
-        addMessage("AI চিন্তা করছে...", 'ai');
-        const loadingMessage = chatWindow.lastChild;
-
-        // মডেল ও URL সেট করা
-        const model = 'gemini-2.5-flash'; 
-        const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${API_KEY}`;
-
-        // কন্টেন্ট শুধুমাত্র টেক্সট অংশ নিয়ে গঠিত
-        let contents = [{ text: prompt }];
-        
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    contents: [{ parts: contents }]
-                })
+                                    let row = `<tr>
+                                        <td>${donor.name}<br><small style="color:#7f8c8d">পিতা: ${donor.father}</small></td>
+                                        <td style="font-weight:bold; color:#e74c3c">${donor.group}</td>
+                                        <td>${donor.phone}</td>
+                                        <td>${donor.age} বছর, ${donor.weight}</td>
+                                        <td>${donor.address}, ${donor.upazilaRaw}, ${donor.district}</td>
+                                        <td><button class="btn-delete" onclick="deleteDonor('${path}')">ডিলিট</button></td>
+                                    </tr>`;
+                                    
+                                    tableBody.innerHTML += row;
+                                });
+                            });
+                        });
+                    });
+                }
+                
+                document.getElementById('totalDonors').innerText = count;
+                if(count === 0) {
+                    tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>কোনো রক্তদাতার তথ্য পাওয়া যায়নি।</td></tr>";
+                }
             });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`HTTP ত্রুটি: ${response.status}. বিস্তারিত: ${errorData.error.message}`);
-            }
-
-            const data = await response.json();
-            
-            // ৪. এআই এর সাড়া প্রক্রিয়াকরণ
-            const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "কোনো সাড়া পাওয়া যায়নি বা ত্রুটি হয়েছে।";
-            
-            // ৫. লোডিং মেসেজ সরিয়ে আসল উত্তর বসানো
-            loadingMessage.textContent = aiResponse;
-
-        } catch (error) {
-            console.error('Error:', error);
-            
-            // API ত্রুটিগুলি সমাধানের জন্য সংশোধিত অংশ
-            let errorMessage = `API সংযোগ ব্যর্থ হয়েছে। বিস্তারিত: ${error.message}`;
-
-            if (error.message.includes('400') || error.message.includes('API key is invalid')) {
-                 errorMessage = "❌ ত্রুটি: আপনার **API Key সম্ভবত অবৈধ** অথবা এটি যে মডেল ব্যবহার করার চেষ্টা করছে, তার জন্য অনুমোদিত নয়।";
-            } else if (error.message.includes('403') || error.message.includes('permission') || error.message.includes('NOT_FOUND')) {
-                 errorMessage = "❌ ত্রুটি: **মডেল অ্যাক্সেসে সমস্যা**।";
-            }
-
-            loadingMessage.textContent = errorMessage;
         }
-    }
 
-    // ইভেন্ট লিসেনার (অপরিবর্তিত)
-    sendBtn.addEventListener('click', sendMessage);
-    promptInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            sendMessage();
+        // রক্তদাতার ডাটা ডিলিট করার ফাংশন
+        function deleteDonor(path) {
+            if(confirm("আপনি কি নিশ্চিতভাবে এই রক্তদাতার তথ্যটি ডিলিট করতে চান?")) {
+                database.ref(path).remove()
+                .then(() => {
+                    alert("তথ্য সফলভাবে ডিলিট করা হয়েছে।");
+                })
+                .catch((error) => {
+                    alert("ডিলিট করতে সমস্যা হয়েছে: " + error.message);
+                });
+            }
         }
-    });
-</script>
-
+    </script>
 </body>
 </html>
